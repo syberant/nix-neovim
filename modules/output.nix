@@ -5,7 +5,7 @@ with pkgs.lib;
 {
   options.output = {
     config_file = mkOption {
-      type = types.str;
+      type = types.lines;
       default = "";
     };
 
