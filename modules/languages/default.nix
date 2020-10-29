@@ -1,5 +1,5 @@
 { ... }:
 
 {
-  imports = [ ./haskell.nix ./nix.nix ];
+  imports = [ ./haskell.nix ./nix.nix ./rust.nix ];
 }

@@ -25,6 +25,8 @@ in {
       nixfmt = mkEnableOption "nixfmt formatter";
 
       stylish-haskell = mkEnableOption "stylish-haskell formatter";
+
+      rustfmt = mkEnableOption "rustfmt formatter";
     };
   };
 
@@ -37,6 +39,11 @@ in {
     '' ++ optional cfg.formatters.nixfmt ''
       let g:neoformat_nix_nixfmt = {
         \ 'exe' : '${pkgs.nixfmt}/bin/nixfmt',
+        \ 'stdin' : 1,
+      \ }
+    '' ++ optional cfg.formatters.rustfmt ''
+      let g:neoformat_rust_rustfmt = {
+        \ 'exe' : '${pkgs.rustfmt}/bin/rustfmt',
         \ 'stdin' : 1,
       \ }
     '';
