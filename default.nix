@@ -1,3 +1,20 @@
-{ pkgs ? import <nixpkgs> { }, configuration ? ./test.nix }:
+{ configuration, pkgs }:
 
-import ./neovim.nix { inherit pkgs configuration; }
+with pkgs.lib;
+
+let
+  modules = import ./modules/module-list.nix;
+  pkgsModule = rec {
+    _file = ./neovim.nix;
+    key = _file;
+    config = { _module.args.pkgs = mkForce pkgs; };
+  };
+  res = (evalModules {
+    modules = modules ++ [ pkgsModule configuration ];
+  }).config.output;
+in pkgs.neovim.override {
+  configure = {
+    customRC = res.config_file;
+    packages.myVimPackage.start = res.plugins;
+  };
+}
