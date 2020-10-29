@@ -1,1 +1,1 @@
-[ ./output.nix ./neoformat.nix ]
+[ ./lightline.nix ./output.nix ./neoformat.nix ]
