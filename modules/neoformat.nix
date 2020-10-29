@@ -22,17 +22,9 @@ in {
     };
 
     formatters = {
-      nixfmt = mkOption {
-        type = types.bool;
-        default = true;
-        description = "Whether or not to enable nixfmt.";
-      };
+      nixfmt = mkEnableOption "nixfmt formatter";
 
-      stylish-haskell = mkOption {
-        type = types.bool;
-        default = true;
-        description = "Whether or not to enable stylish-haskell.";
-      };
+      stylish-haskell = mkEnableOption "stylish-haskell formatter";
     };
   };
 
@@ -51,12 +43,15 @@ in {
     format_declarations = builtins.foldl' (a: b: a + "\n" + b) "" formatters;
   in mkIf cfg.enable {
     output.config_file = ''
+      " Necessary for filetype detection
+      filetype on
+      filetype plugin indent on
+
+      " Explicitly set the paths to the formatters
       ${format_declarations}
 
-      augroup neoformat
-        automcd!
-        ${optionalString cfg.fmt_on_save "autocmd BufWritePre * Neoformat"}
-      augroup END
+      " Format on save (if enabled)
+      ${optionalString cfg.fmt_on_save "autocmd BufWritePre * Neoformat"}
     '';
 
     output.plugins = with pkgs.vimPlugins; [ neoformat ];
