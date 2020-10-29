@@ -1,1 +1,9 @@
-[ ./base.nix ./languages ./lightline.nix ./output.nix ./neoformat.nix ]
+[
+  ./colourscheme
+  ./languages
+
+  ./base.nix
+  ./lightline.nix
+  ./output.nix
+  ./neoformat.nix
+]
