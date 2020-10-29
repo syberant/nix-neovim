@@ -1,68 +1,64 @@
-{ pkgs, config, ... }:
+{ pkgs, lib, config, ... }:
 
-with pkgs.lib;
+with lib;
 
 let cfg = config.neoformat;
 in {
   options.neoformat = {
-    enable = mkEnableOption {
-      default = false;
-      description = "Whether or not to enable Neoformat.";
-    };
+    enable = mkEnableOption "Neoformat";
 
     # TODO: config
-    use_path = mkEnableOption {
+    use_path = mkOption {
+      type = types.bool;
       default = true;
       description =
         "Whether or not to use formatters from the path when available (less declarative approach).";
     };
 
-    fmt_on_save = mkEnableOption {
+    fmt_on_save = mkOption {
+      type = types.bool;
       default = true;
       description = "Whether to automatically format when saving.";
     };
 
     formatters = {
-      nixfmt = mkEnableOption {
+      nixfmt = mkOption {
+        type = types.bool;
         default = true;
         description = "Whether or not to enable nixfmt.";
       };
 
-      stylish-haskell = mkEnableOption {
+      stylish-haskell = mkOption {
+        type = types.bool;
         default = true;
         description = "Whether or not to enable stylish-haskell.";
       };
     };
   };
 
-  #  config = let
-  #    formatters = [
-  #      (mkIf cfg.formatters.stylish-haskell ''
-  #        let g:neoformat_haskell_stylishhaskell = {
-  #          \ 'exe' : '${pkgs.stylish-haskell}/bin/stylish-haskell',
-  #          \ 'stdin' : 1,
-  #        \ }
-  #      '')
-  #      (mkIf cfg.formatters.nixfmt ''
-  #        let g:neoformat_nix_nixfmt = {
-  #          \ 'exe' : '${pkgs.nixfmt}/bin/nixfmt',
-  #          \ 'stdin' : 1,
-  #        \ }
-  #      '')
-  #    ];
-  #    format_declarations = builtins.foldl' (a: b: a + "\n" + b) "" formatters;
-  #  in mkIf cfg.enable {
-  #    output.config_file = ''
-  #      ''${format_declarations}
-  #
-  #      augroup neoformat
-  #        automcd!
-  #        ''${mkIf cfg.fmt_on_save "autocmd BufWritePre * Neoformat"}
-  #      augroup END
-  #    '';
-  #
-  #    output.plugins = with pkgs.vimPlugins; [ neoformat ];
-  #  };
+  config = let
+    formatters = [ ] ++ optional cfg.formatters.stylish-haskell ''
+      let g:neoformat_haskell_stylishhaskell = {
+        \ 'exe' : '${pkgs.stylish-haskell}/bin/stylish-haskell',
+        \ 'stdin' : 1,
+      \ }
+    '' ++ optional cfg.formatters.nixfmt ''
+      let g:neoformat_nix_nixfmt = {
+        \ 'exe' : '${pkgs.nixfmt}/bin/nixfmt',
+        \ 'stdin' : 1,
+      \ }
+    '';
+    format_declarations = builtins.foldl' (a: b: a + "\n" + b) "" formatters;
+  in mkIf cfg.enable {
+    output.config_file = ''
+      ${format_declarations}
 
-  config = pkgs.lib.mkIf false { output.config_file = "a"; };
+      augroup neoformat
+        automcd!
+        ${optionalString cfg.fmt_on_save "autocmd BufWritePre * Neoformat"}
+      augroup END
+    '';
+
+    output.plugins = with pkgs.vimPlugins; [ neoformat ];
+  };
 }
