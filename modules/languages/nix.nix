@@ -9,6 +9,11 @@ in {
   config = mkIf cfg.enable {
     neoformat.formatters.nixfmt = true;
 
+    nerdcommenter.NERDCustomDelimiters = [{
+      language = "nix";
+      left = "#";
+    }];
+
     output.plugins = with pkgs.vimPlugins; [ vim-nix ];
   };
 }
