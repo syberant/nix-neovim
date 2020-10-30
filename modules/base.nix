@@ -34,6 +34,13 @@ in {
       default = 3;
       description = "The amount of space line numbering takes up.";
     };
+
+    # Keybindings
+    leader = mkOption {
+      type = types.str;
+      default = "\\\\"; # Nix turns it into \\ which neovim turns into \
+      description = "The <leader> key, used for custom keybindings.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -55,6 +62,9 @@ in {
       ${optionalString cfg.line-number "set number"}
       ${optionalString cfg.relativenumber "set relativenumber"}
       set numberwidth=${toString cfg.line-number-width}
+
+      " Keybindings
+      let mapleader = "${cfg.leader}"
     '';
   };
 }
