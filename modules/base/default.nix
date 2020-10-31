@@ -43,30 +43,48 @@ in {
       default = "\\\\"; # Nix turns it into \\ which neovim turns into \
       description = "The <leader> key, used for custom keybindings.";
     };
+
+    # All the things to "set"
+    set = mkOption {
+      type = with types; listOf str;
+      default = [ ];
+      description = "A list of strings to 'set <something>' in vimscript.";
+    };
   };
 
-  config = mkIf cfg.enable {
-    output.config_file = ''
-      ${optionalString cfg.expandtab "set expandtab"}
+  config = mkMerge [
+    { output.config_file = concatMapStringsSep "\n" (a: "set ${a}") cfg.set; }
+    (mkIf cfg.enable {
+      base.set = concatLists (concatMap (a: optional (head a) (tail a)) [
+        [
+          cfg.expandtab
+          "expandtab"
+        ]
 
-      set tabstop=${toString cfg.tabstop}
-      set softtabstop=${toString cfg.tabstop}
-      set shiftwidth=${toString cfg.tabstop}
+        # Line numbering
+        [ cfg.cursorline "cursorline" ]
+        [ cfg.line-number "number" ]
+        [ cfg.relativenumber "relativenumber" ]
+      ]) ++ [
+        "tabstop=${toString cfg.tabstop}"
+        "softtabstop=${toString cfg.tabstop}"
+        "shiftwidth=${toString cfg.tabstop}"
 
-      ${optionalString cfg.auto-termguicolors ''
-        if has('termguicolors')
-          set termguicolors
-        endif
-      ''}
+        # Line numbering
+        "numberwidth=${toString cfg.line-number-width}"
+      ];
 
-      " line numbering
-      ${optionalString cfg.cursorline "set cursorline"}
-      ${optionalString cfg.line-number "set number"}
-      ${optionalString cfg.relativenumber "set relativenumber"}
-      set numberwidth=${toString cfg.line-number-width}
+      output.config_file = ''
+        ${optionalString cfg.auto-termguicolors ''
+          " Enable 24-bit colours if available
+          if has('termguicolors')
+            set termguicolors
+          endif
+        ''}
 
-      " Keybindings
-      let mapleader = "${cfg.leader}"
-    '';
-  };
+        " Keybindings
+        let mapleader = "${cfg.leader}"
+      '';
+    })
+  ];
 }
