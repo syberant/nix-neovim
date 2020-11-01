@@ -7,7 +7,11 @@ let
   pkgsModule = rec {
     _file = ./neovim.nix;
     key = _file;
-    config = { _module.args.pkgs = mkForce pkgs; };
+    config = {
+      _module.args.pkgs = mkForce pkgs;
+      _module.args.vimLib =
+        pkgs.lib.extend (self: super: import ./lib { lib = super; });
+    };
   };
   res = (evalModules {
     modules = modules ++ [ pkgsModule configuration ];

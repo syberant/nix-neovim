@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, vimLib, ... }:
 
 with lib;
 
@@ -46,7 +46,7 @@ in {
 
     # All the things to "set"
     set = mkOption {
-      type = with types; listOf str;
+      type = vimLib.types.optionalStringList;
       default = [ ];
       description = "A list of strings to 'set <something>' in vimscript.";
     };
@@ -54,8 +54,13 @@ in {
 
   config = mkMerge [
     { output.config_file = concatMapStringsSep "\n" (a: "set ${a}") cfg.set; }
+
     (mkIf cfg.enable {
-      base.set = concatLists (concatMap (a: optional (head a) (tail a)) [
+      base.set = [
+        # Tabstop
+        "tabstop=${toString cfg.tabstop}"
+        "softtabstop=${toString cfg.tabstop}"
+        "shiftwidth=${toString cfg.tabstop}"
         [
           cfg.expandtab
           "expandtab"
@@ -65,12 +70,6 @@ in {
         [ cfg.cursorline "cursorline" ]
         [ cfg.line-number "number" ]
         [ cfg.relativenumber "relativenumber" ]
-      ]) ++ [
-        "tabstop=${toString cfg.tabstop}"
-        "softtabstop=${toString cfg.tabstop}"
-        "shiftwidth=${toString cfg.tabstop}"
-
-        # Line numbering
         "numberwidth=${toString cfg.line-number-width}"
       ];
 
