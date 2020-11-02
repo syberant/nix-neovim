@@ -11,7 +11,7 @@ let
       description = "Whether to enable ${text}.";
     };
 in {
-  imports = [ ./search.nix ./wrapping.nix ];
+  imports = [ ./files.nix ./search.nix ./wrapping.nix ];
 
   options.base = {
     enable = mkEnableOptionTrue "the base module";
