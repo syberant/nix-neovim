@@ -9,8 +9,7 @@ let
     key = _file;
     config = {
       _module.args.pkgs = mkForce pkgs;
-      _module.args.vimLib =
-        pkgs.lib.extend (self: super: import ./lib { lib = super; });
+      _module.args.vimLib = import ./lib { lib = pkgs.lib; };
     };
   };
   res = (evalModules {
