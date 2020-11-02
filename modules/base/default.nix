@@ -50,10 +50,29 @@ in {
       default = [ ];
       description = "A list of strings to 'set <something>' in vimscript.";
     };
+
+    # All keybindings
+    keybindings = mkOption {
+      type = types.listOf vimLib.types.keymapping;
+      description = "A list of keymappings.";
+      default = [ ];
+    };
   };
 
   config = mkMerge [
     { output.config_file = concatMapStringsSep "\n" (a: "set ${a}") cfg.set; }
+
+    {
+      output.config_file =
+        concatMapStringsSep "\n" (a: "${a.mapCommand} ${a.keys} ${a.action}")
+        cfg.keybindings;
+    }
+
+    {
+      output.config_file = mkBefore (optionalString cfg.enable ''
+        let mapleader = "${cfg.leader}"
+      '');
+    }
 
     (mkIf cfg.enable {
       base.set = [
@@ -73,16 +92,11 @@ in {
         "numberwidth=${toString cfg.line-number-width}"
       ];
 
-      output.config_file = ''
-        ${optionalString cfg.auto-termguicolors ''
-          " Enable 24-bit colours if available
-          if has('termguicolors')
-            set termguicolors
-          endif
-        ''}
-
-        " Keybindings
-        let mapleader = "${cfg.leader}"
+      output.config_file = optionalString cfg.auto-termguicolors ''
+        " Enable 24-bit colours if available
+        if has('termguicolors')
+          set termguicolors
+        endif
       '';
     })
   ];
