@@ -10,4 +10,5 @@
   ./neoformat.nix
   ./vim-repeat.nix
   ./vim-surround.nix
+  ./vim-which-key.nix
 ]

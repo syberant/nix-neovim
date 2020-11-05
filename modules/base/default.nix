@@ -44,6 +44,13 @@ in {
       description = "The <leader> key, used for custom keybindings.";
     };
 
+    timeoutlen = mkOption {
+      type = types.ints.positive;
+      default = 1000;
+      description =
+        "The timeout after which a partial keybinding will be cancelled.";
+    };
+
     # All the things to "set"
     set = mkOption {
       type = vimLib.types.optionalStringList;
@@ -70,7 +77,7 @@ in {
 
     {
       output.config_file = mkBefore (optionalString cfg.enable ''
-        let mapleader = "${cfg.leader}"
+        let mapleader="${cfg.leader}"
       '');
     }
 
@@ -90,6 +97,9 @@ in {
         [ cfg.line-number "number" ]
         [ cfg.relativenumber "relativenumber" ]
         "numberwidth=${toString cfg.line-number-width}"
+
+        # Keybinding
+        "timeoutlen=${toString cfg.timeoutlen}"
       ];
 
       output.config_file = optionalString cfg.auto-termguicolors ''
