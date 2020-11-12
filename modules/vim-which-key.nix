@@ -12,8 +12,6 @@ in {
       default = [ ];
       description = "Shows the keybindings on these keys";
     };
-
-    timeout = mkAliasDefinitions options.base.timeoutlen;
   };
 
   config = mkIf cfg.enable {
