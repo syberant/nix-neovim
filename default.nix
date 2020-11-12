@@ -15,7 +15,7 @@ let
   res = (evalModules {
     modules = modules ++ [ pkgsModule configuration ];
   }).config.output;
-in pkgs.neovim.override {
+in pkgs.wrapNeovim res.package {
   configure = {
     customRC = res.config_file;
     packages.myVimPackage.start = res.plugins;

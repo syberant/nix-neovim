@@ -7,7 +7,8 @@ in {
   options.output = {
     config_file = mkOption {
       type = types.lines;
-      default =
+      default = "";
+      description =
         "Raw text ending up in config file, this is used internally by all modules, please use extraConfig instead to place your extra configuration after nix-neovim's automated one.";
     };
 
@@ -21,6 +22,12 @@ in {
       type = types.lines;
       default = "";
       description = "Escape hatch for extra configuration.";
+    };
+
+    package = mkOption {
+      type = types.package;
+      default = pkgs.neovim-unwrapped;
+      description = "Unwrapped neovim binary";
     };
   };
 
