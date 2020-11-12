@@ -17,7 +17,7 @@ in {
 
     fmt_on_save = mkOption {
       type = types.bool;
-      default = true;
+      default = false;
       description = "Whether to automatically format when saving.";
     };
 
