@@ -27,9 +27,25 @@ in {
     package = mkOption {
       type = types.package;
       default = pkgs.neovim-unwrapped;
-      description = "Unwrapped neovim binary";
+      description = "Unwrapped neovim binary.";
     };
+
+    makeWrapper = mkOption {
+      type = types.str;
+      default = "";
+      description = "Args to pass to the makeWrapper command.";
+      example = ''
+        output.makeWrapper = "--set PATH ${
+          makeBinPath [ coreutils gnused gawk gnugrep ]
+        }";
+      '';
+    };
+
+    enableDevConfig = mkEnableOption "nix-neovim development configuration, helps maintain purity.";
   };
 
-  config = { output.config_file = mkAfter cfg.extraConfig; };
+  config = {
+    output.config_file = mkAfter cfg.extraConfig;
+    output.makeWrapper = with pkgs; mkIf cfg.enableDevConfig "--set PATH ${makeBinPath [ coreutils gnused gawk gnugrep ]}";
+  };
 }

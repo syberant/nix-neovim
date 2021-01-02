@@ -32,6 +32,7 @@
   };
 
   output.package = pkgs.neovim-nightly;
+  output.enableDevConfig = true;
 
   output.extraConfig = ''
     " map <leader>; <Plug>NERDCommenterToggle
