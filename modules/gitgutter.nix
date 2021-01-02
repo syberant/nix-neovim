@@ -2,8 +2,8 @@
 
 with lib;
 
-# NOTE: this plugin doesn't work without access to some tools on PATH, it uses at least git and grep but still some others I still have to find out.
-# TODO: integrate all runtime dependencies
+# NOTE: this plugin might not work completely in a pure environment.
+# Git is integrated however.
 
 let
   cfg = config.gitgutter;
@@ -19,7 +19,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    output.config_file = optionalString cfg.onSave ''
+    output.config_file = ''
+      let g:gitgutter_git_executable = "${pkgs.git}/bin/git"
+    '' + optionalString cfg.onSave ''
       autocmd BufWritePost,InsertLeave * GitGutter
     '' + optionalString cfg.onInsertLeave ''
       autocmd InsertLeave * GitGutter
