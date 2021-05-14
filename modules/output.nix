@@ -46,6 +46,6 @@ in {
 
   config = {
     output.config_file = mkAfter cfg.extraConfig;
-    output.makeWrapper = with pkgs; mkIf cfg.enableDevConfig "--set PATH ${makeBinPath [ coreutils gnused gawk gnugrep ]}";
+    output.makeWrapper = with pkgs; mkIf cfg.enableDevConfig "--set PATH ${makeBinPath stdenv.initialPath}";
   };
 }
