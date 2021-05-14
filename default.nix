@@ -21,4 +21,6 @@ in pkgs.wrapNeovim res.package {
     customRC = res.config_file;
     packages.myVimPackage.start = res.plugins;
   };
+} // {
+  passthru.customRC = pkgs.writeText "customRC" res.config_file;
 }
