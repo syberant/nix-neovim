@@ -30,22 +30,31 @@ in {
       description = "Unwrapped neovim binary.";
     };
 
+    path = mkOption {
+      type = with types; listOf package;
+      default = [ ];
+      description =
+        "PATH available to neovim, [] means impure (i.e. no PATH will be set)";
+      example = ''
+        output.path = with pkgs; makeBinPath pkgs.stdenv.initialPath;
+      '';
+    };
+
     makeWrapper = mkOption {
       type = types.separatedString " \\\n";
       default = "";
       description = "Args to pass to the makeWrapper command.";
       example = ''
-        output.makeWrapper = "--set PATH ${
+        output.makeWrapper = with pkgs; "--set PATH ${
           makeBinPath [ coreutils gnused gawk gnugrep ]
         }";
       '';
     };
-
-    enableDevConfig = mkEnableOption "nix-neovim development configuration, helps maintain purity.";
   };
 
   config = {
     output.config_file = mkAfter cfg.extraConfig;
-    output.makeWrapper = with pkgs; mkIf cfg.enableDevConfig "--set PATH ${makeBinPath stdenv.initialPath}";
+    output.makeWrapper = with pkgs;
+      mkIf (cfg.path != [ ]) "--set PATH ${makeBinPath cfg.path}";
   };
 }
