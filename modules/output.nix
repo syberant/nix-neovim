@@ -31,7 +31,7 @@ in {
     };
 
     makeWrapper = mkOption {
-      type = types.str;
+      type = types.separatedString " \\\n";
       default = "";
       description = "Args to pass to the makeWrapper command.";
       example = ''
