@@ -30,11 +30,17 @@ in {
       description = "Unwrapped neovim binary.";
     };
 
+    pure = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Sets the PATH to disable binaries on your PATH, helps maintain purity.";
+    };
+
     path = mkOption {
       type = with types; listOf package;
       default = [ ];
       description =
-        "PATH available to neovim, [] means impure (i.e. no PATH will be set)";
+        "PATH available to neovim, `output.pure` determines whether this complements your PATH or replaces it.";
       example = ''
         output.path = with pkgs; makeBinPath pkgs.stdenv.initialPath;
       '';
@@ -54,7 +60,6 @@ in {
 
   config = {
     output.config_file = mkAfter cfg.extraConfig;
-    output.makeWrapper = with pkgs;
-      mkIf (cfg.path != [ ]) "--set PATH ${makeBinPath cfg.path}";
+    output.makeWrapper = (if cfg.pure then "--prefix PATH : " else "--set PATH ") + makeBinPath cfg.path;
   };
 }
