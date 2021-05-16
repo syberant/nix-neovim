@@ -2,6 +2,7 @@
   ./base
   ./colourscheme
   ./languages
+  ./telescope
 
   ./gitgutter.nix
   ./lightline.nix
