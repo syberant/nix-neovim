@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-20.09";
+    nixpkgs.url = "github:NixOS/nixpkgs?rev=2f06be9f99f56275951d7b3a3f642608e2f90fe7";
 
     neovim-nightly.url = "github:nix-community/neovim-nightly-overlay?rev=dad48e1edca040a68c51c1433606b57cfdf027dc";
   };
