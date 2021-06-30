@@ -12,10 +12,6 @@
   nerdcommenter.enable = true;
   gitgutter.enable = true;
   vim-surround.enable = true;
-  vim-which-key = {
-    enable = true;
-    showkeys = [ "<Space>" ];
-  };
 
   base = {
     leader = "\\<space>";
@@ -32,7 +28,6 @@
   };
 
   output.package = pkgs.neovim-nightly;
-  output.enableDevConfig = true;
 
   output.extraConfig = ''
     " map <leader>; <Plug>NERDCommenterToggle
