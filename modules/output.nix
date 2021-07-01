@@ -30,20 +30,28 @@ in {
       description = "Unwrapped neovim binary.";
     };
 
-    pure = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Sets the PATH to disable binaries on your PATH, helps maintain purity.";
-    };
+    path = {
+      style = mkOption {
+        type = types.enum [ "pure" "impure" "nopath" ];
+        default = "impure";
+        description = ''
+          Decides the style in which neovim's PATH is altered.
 
-    path = mkOption {
-      type = with types; listOf package;
-      default = [ ];
-      description =
-        "PATH available to neovim, `output.pure` determines whether this complements your PATH or replaces it.";
-      example = ''
-        output.path = with pkgs; makeBinPath pkgs.stdenv.initialPath;
-      '';
+          pure: Neovim's PATH is overwritten meaning that it can NOT access the binaries in your own PATH.
+          impure: The necessary dependencies will be added (prefixed) to neovim's PATH but binaries in your own PATH will work as fallback.
+          nopath: PATH is not altered. Disables many of nix-neovim's dependencies significantly reducing closure size, you will have to make sure you provide these dependencies yourself.
+        '';
+      };
+
+      path = mkOption {
+        type = with types; listOf package;
+        default = [ ];
+        description =
+          "PATH available to neovim, `output.pure` determines whether this complements your PATH or replaces it.";
+        example = ''
+          output.path = with pkgs; makeBinPath pkgs.stdenv.initialPath;
+        '';
+      };
     };
 
     makeWrapper = mkOption {
@@ -51,7 +59,7 @@ in {
       default = "";
       description = "Args to pass to the makeWrapper command.";
       example = ''
-        output.makeWrapper = with pkgs; "--set PATH ${
+        output.makeWrapper = with pkgs; "--set PATH ''${
           makeBinPath [ coreutils gnused gawk gnugrep ]
         }";
       '';
@@ -60,6 +68,14 @@ in {
 
   config = {
     output.config_file = mkAfter cfg.extraConfig;
-    output.makeWrapper = (if cfg.pure then "--prefix PATH : " else "--set PATH ") + makeBinPath cfg.path;
+
+    # Add a base set of utilities (sh, awk, sed, etc.)
+    output.path.path = pkgs.stdenv.initialPath;
+
+    output.makeWrapper = {
+      "pure" = "--set PATH ${makeBinPath cfg.path.path}";
+      "impure" = "--prefix PATH : ${makeBinPath cfg.path.path}";
+      "nopath" = "";
+    }.${cfg.path.style};
   };
 }

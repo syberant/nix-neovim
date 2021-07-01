@@ -29,6 +29,8 @@
 
   output.package = pkgs.neovim-nightly;
 
+  output.path.style = "pure";
+
   output.extraConfig = ''
     " map <leader>; <Plug>NERDCommenterToggle
     " set timeoutlen=500

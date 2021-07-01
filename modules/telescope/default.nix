@@ -10,8 +10,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # TODO: Isolate dependencies to telescope
-    output.path = with pkgs; [ fd ripgrep ];
+    output.path.path = with pkgs; [ fd ripgrep ];
 
     output.plugins = with pkgs.vimPlugins; [ telescope-nvim ];
   };
