@@ -12,4 +12,5 @@
   ./vim-repeat.nix
   ./vim-surround.nix
   ./which-key-nvim.nix
+  ./vim-tmux-navigator.nix
 ]
