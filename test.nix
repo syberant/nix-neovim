@@ -1,7 +1,9 @@
 { pkgs, ... }:
 
 {
-  colourscheme.gruvbox.enable = true;
+  # colourscheme.gruvbox.enable = true;
+  colourscheme.tokyonight.enable = true;
+  colourscheme.tokyonight.style = "night";
   languages = {
     nix.enable = true;
     haskell.enable = true;
@@ -13,21 +15,25 @@
   gitgutter.enable = true;
   vim-surround.enable = true;
 
+  # vim-tmux-navigator.enable = true;
+
   base = {
-    leader = "\\<space>";
     search.enable = true;
     wrapping.enable = true;
     files.enable = true;
 
-    keybindings = [{
-      action = "<Plug>NERDCommenterToggle";
-      keys = "<leader>;";
-      mapCommand = "map";
-    }];
-    set = [ "nowrap" ];
+    keybindings = {
+      leader = "\\<space>";
+      keybindings = [{
+        action = "<Plug>NERDCommenterToggle";
+        keys = "<leader>;";
+        mapCommand = "map";
+      }];
+    };
+    options = {
+      set = [ "nowrap" ];
+    };
   };
-
-  output.package = pkgs.neovim-nightly;
 
   output.path.style = "pure";
 

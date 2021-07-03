@@ -11,7 +11,7 @@ let
       description = "Whether to enable ${text}.";
     };
 in {
-  imports = [ ./files.nix ./search.nix ./wrapping.nix ];
+  imports = [ ./files.nix ./keybindings.nix ./options.nix ./search.nix ./wrapping.nix ];
 
   options.base = {
     enable = mkEnableOptionTrue "the base module";
@@ -37,77 +37,40 @@ in {
       description = "The amount of space line numbering takes up.";
     };
 
-    # Keybindings
-    leader = mkOption {
-      type = types.str;
-      default = "\\\\"; # Nix turns it into \\ which neovim turns into \
-      description = "The <leader> key, used for custom keybindings.";
-    };
-
     timeoutlen = mkOption {
       type = types.ints.positive;
       default = 1000;
       description =
         "The timeout after which a partial keybinding will be cancelled.";
     };
-
-    # All the things to "set"
-    set = mkOption {
-      type = vimLib.types.optionalStringList;
-      default = [ ];
-      description = "A list of strings to 'set <something>' in vimscript.";
-    };
-
-    # All keybindings
-    keybindings = mkOption {
-      type = types.listOf vimLib.types.keymapping;
-      description = "A list of keymappings.";
-      default = [ ];
-    };
   };
 
-  config = mkMerge [
-    { output.config_file = concatMapStringsSep "\n" (a: "set ${a}") cfg.set; }
+  config = mkIf cfg.enable {
+    base.options.set = [
+      # Tabstop
+      "tabstop=${toString cfg.tabstop}"
+      "softtabstop=${toString cfg.tabstop}"
+      "shiftwidth=${toString cfg.tabstop}"
+      [
+        cfg.expandtab
+        "expandtab"
+      ]
 
-    {
-      output.config_file =
-        concatMapStringsSep "\n" (a: "${a.mapCommand} ${a.keys} ${a.action}")
-        cfg.keybindings;
-    }
+      # Line numbering
+      [ cfg.cursorline "cursorline" ]
+      [ cfg.line-number "number" ]
+      [ cfg.relativenumber "relativenumber" ]
+      "numberwidth=${toString cfg.line-number-width}"
 
-    {
-      output.config_file = mkBefore (optionalString cfg.enable ''
-        let mapleader="${cfg.leader}"
-      '');
-    }
+      # Keybinding
+      "timeoutlen=${toString cfg.timeoutlen}"
+    ];
 
-    (mkIf cfg.enable {
-      base.set = [
-        # Tabstop
-        "tabstop=${toString cfg.tabstop}"
-        "softtabstop=${toString cfg.tabstop}"
-        "shiftwidth=${toString cfg.tabstop}"
-        [
-          cfg.expandtab
-          "expandtab"
-        ]
-
-        # Line numbering
-        [ cfg.cursorline "cursorline" ]
-        [ cfg.line-number "number" ]
-        [ cfg.relativenumber "relativenumber" ]
-        "numberwidth=${toString cfg.line-number-width}"
-
-        # Keybinding
-        "timeoutlen=${toString cfg.timeoutlen}"
-      ];
-
-      output.config_file = optionalString cfg.auto-termguicolors ''
-        " Enable 24-bit colours if available
-        if has('termguicolors')
-          set termguicolors
-        endif
-      '';
-    })
-  ];
+    output.config_file = optionalString cfg.auto-termguicolors ''
+      " Enable 24-bit colours if available
+      if has('termguicolors')
+        set termguicolors
+      endif
+    '';
+  };
 }
