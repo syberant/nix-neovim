@@ -16,7 +16,7 @@ let
     modules = modules ++ [ pkgsModule configuration ];
   }).config.output;
 in pkgs.wrapNeovim res.package {
-  extraMakeWrapperArgs = res.makeWrapper;
+  extraMakeWrapperArgs = " " + res.makeWrapper;
   configure = {
     customRC = res.config_file;
     packages.myVimPackage.start = res.plugins;
