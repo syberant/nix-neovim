@@ -46,25 +46,23 @@ in {
   };
 
   config = mkIf cfg.enable {
-    base.options.set = [
+    base.options.set = {
       # Tabstop
-      "tabstop=${toString cfg.tabstop}"
-      "softtabstop=${toString cfg.tabstop}"
-      "shiftwidth=${toString cfg.tabstop}"
-      [
-        cfg.expandtab
-        "expandtab"
-      ]
+      tabstop = cfg.tabstop;
+      softtabstop = cfg.tabstop;
+      shiftwidth = cfg.tabstop;
+
+      expandtab = mkIf cfg.expandtab true;
 
       # Line numbering
-      [ cfg.cursorline "cursorline" ]
-      [ cfg.line-number "number" ]
-      [ cfg.relativenumber "relativenumber" ]
-      "numberwidth=${toString cfg.line-number-width}"
+      cursorline = mkIf cfg.cursorline true;
+      number = mkIf cfg.line-number true;
+      relativenumber = mkIf cfg.relativenumber true;
+      numberwidth = cfg.line-number-width;
 
       # Keybinding
-      "timeoutlen=${toString cfg.timeoutlen}"
-    ];
+      timeoutlen = cfg.timeoutlen;
+    };
 
     output.config_file = optionalString cfg.auto-termguicolors ''
       " Enable 24-bit colours if available

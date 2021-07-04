@@ -31,7 +31,7 @@
       }];
     };
     options = {
-      set = [ "nowrap" ];
+      set.wrap = false;
     };
   };
 
