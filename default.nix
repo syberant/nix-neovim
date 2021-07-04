@@ -1,9 +1,27 @@
 { configuration, pkgs }:
 
 with pkgs.lib;
+with builtins;
 
 let
-  modules = import ./modules/module-list.nix;
+  getFiles = { dir, suffix ? null, allow_default ? true }:
+    let
+      hasDefault = d: hasAttr "default.nix" (readDir (dir + "/${d}"));
+      isImportable = name: kind:
+        if kind == "directory" then
+          allow_default && hasDefault name
+        else
+          suffix == null || hasSuffix suffix name;
+      files = attrNames (filterAttrs isImportable (readDir dir));
+    in map (f: dir + "/${f}") files;
+
+  getNixFiles = dir:
+    getFiles {
+      inherit dir;
+      suffix = "nix";
+    };
+  modules = getNixFiles ./modules;
+
   pkgsModule = rec {
     _file = ./neovim.nix;
     key = _file;
