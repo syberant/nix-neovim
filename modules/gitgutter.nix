@@ -19,9 +19,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    output.config_file = ''
-      let g:gitgutter_git_executable = "${pkgs.git}/bin/git"
-    '' + optionalString cfg.onSave ''
+    base.options.var.gitgutter_git_executable = "${pkgs.git}/bin/git";
+
+    output.config_file = optionalString cfg.onSave ''
       autocmd BufWritePost,InsertLeave * GitGutter
     '' + optionalString cfg.onInsertLeave ''
       autocmd InsertLeave * GitGutter

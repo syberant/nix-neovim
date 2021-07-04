@@ -4,18 +4,23 @@ with lib;
 with builtins;
 
 let
+  settingsFormat = pkgs.formats.json {};
   base = config.base;
   cfg = config.base.options;
 in {
   options.base.options = {
     set = mkOption {
-      type = with types; attrsOf (oneOf [ bool float int str ]);
+      type = with types; submodule {
+        freeformType = settingsFormat.type;
+      };
       default = { };
       description = "A set of options to 'set <key>=<value>' in vimscript.";
     };
 
     var = mkOption {
-      type = with types; attrsOf (oneOf [ bool float int str ]);
+      type = with types; submodule {
+        freeformType = settingsFormat.type;
+      };
       default = { };
       description = "A set of options to 'let g:<key>=<value>' in vimscript.";
     };
@@ -24,8 +29,8 @@ in {
   # https://github.com/nanotee/nvim-lua-guide#managing-vim-options
   config = {
     output.config_file = let
-      json_options = pkgs.writeText "nix-neovim-options" (toJSON cfg.set);
-      json_globals = pkgs.writeText "nix-neovim-globals" (toJSON cfg.var);
+      json_options = settingsFormat.generate "nix-neovim-options" cfg.set;
+      json_globals = settingsFormat.generate "nix-neovim-globals" cfg.var;
     in ''
       lua << EOF
         -- https://stackoverflow.com/questions/11201262/how-to-read-data-from-a-file-in-lua

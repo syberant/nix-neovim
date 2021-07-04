@@ -48,20 +48,17 @@ in {
   config = mkIf cfg.enable {
     base.options.set = {
       # Tabstop
-      tabstop = cfg.tabstop;
+      inherit (cfg) tabstop expandtab;
       softtabstop = cfg.tabstop;
       shiftwidth = cfg.tabstop;
 
-      expandtab = mkIf cfg.expandtab true;
-
       # Line numbering
-      cursorline = mkIf cfg.cursorline true;
-      number = mkIf cfg.line-number true;
-      relativenumber = mkIf cfg.relativenumber true;
+      inherit (cfg) cursorline relativenumber;
+      number = cfg.line-number;
       numberwidth = cfg.line-number-width;
 
       # Keybinding
-      timeoutlen = cfg.timeoutlen;
+      inherit (cfg) timeoutlen;
     };
 
     output.config_file = optionalString cfg.auto-termguicolors ''

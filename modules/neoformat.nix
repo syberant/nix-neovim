@@ -30,36 +30,33 @@ in {
     };
   };
 
-  config = let
-    formatters = [ ] ++ optional cfg.formatters.stylish-haskell ''
-      let g:neoformat_haskell_stylishhaskell = {
-        \ 'exe' : '${pkgs.stylish-haskell}/bin/stylish-haskell',
-        \ 'stdin' : 1,
-      \ }
-    '' ++ optional cfg.formatters.nixfmt ''
-      let g:neoformat_nix_nixfmt = {
-        \ 'exe' : '${pkgs.nixfmt}/bin/nixfmt',
-        \ 'stdin' : 1,
-      \ }
-    '' ++ optional cfg.formatters.rustfmt ''
-      let g:neoformat_rust_rustfmt = {
-        \ 'exe' : '${pkgs.rustfmt}/bin/rustfmt',
-        \ 'stdin' : 1,
-      \ }
-    '';
-    format_declarations = builtins.foldl' (a: b: a + "\n" + b) "" formatters;
-  in mkIf cfg.enable {
+  config = mkIf cfg.enable {
     output.config_file = ''
       " Necessary for filetype detection
       filetype on
       filetype plugin indent on
 
-      " Explicitly set the paths to the formatters
-      ${format_declarations}
-
       " Format on save (if enabled)
       ${optionalString cfg.fmt_on_save "autocmd BufWritePre * Neoformat"}
     '';
+
+    # Explicitly set the paths to the formatters
+    base.options.var = {
+      neoformat_haskell_stylishhaskell = mkIf cfg.formatters.stylish-haskell {
+        exe = "${pkgs.stylish-haskell}/bin/stylish-haskell";
+        stdin = true;
+      };
+
+      neoformat_nix_nixfmt = mkIf cfg.formatters.nixfmt {
+        exe = "${pkgs.nixfmt}/bin/nixfmt";
+        stdin = true;
+      };
+
+      neoformat_rust_rustfmt = mkIf cfg.formatters.rustfmt {
+        exe = "${pkgs.rustfmt}/bin/rustfmt";
+        stdin = true;
+      };
+    };
 
     output.plugins = with pkgs.vimPlugins; [ neoformat ];
   };

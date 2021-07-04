@@ -26,13 +26,13 @@ in {
   };
 
   config = mkIf cfg.enable {
-    output.config_file = ''
-      " swap
-      set directory=${cfg.swapdir}
-    '' + optionalString cfg.enableUndo ''
-      " undo
-      set undofile
-      set undodir=${cfg.undodir}
-    '';
+    base.options.set = mkMerge [
+      { directory = cfg.swapdir; }
+
+      (mkIf cfg.enableUndo {
+        undofile = true;
+        undodir = cfg.undodir;
+      })
+    ];
   };
 }

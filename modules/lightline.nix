@@ -21,18 +21,20 @@ in {
   };
 
   config = mkIf cfg.enable {
-    output.config_file = mkIf cfg.useDefault (''
-      set noshowmode
-      let g:lightline = {
-    '' + optionalString (cfg.colourscheme != null) ''
-      \ 'colorscheme': '${cfg.colourscheme}',
-    '' + ''
-          \ 'active': {
-              \ 'left': [ [ 'mode', 'paste' ], [ 'readonly', 'filename', 'modified' ] ],
-              \ 'right': [ ['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype'] ],
-          \ },
-      \ }
-    '');
+    base.options.set.showmode = mkIf cfg.useDefault false;
+
+    base.options.var.lightline = mkIf cfg.useDefault {
+      colorscheme = mkIf (cfg.colourscheme != null) cfg.colourscheme;
+
+      active = {
+        left = [ [ "mode" "paste" ] [ "readonly" "filename" "modified" ] ];
+        right = [
+          [ "lineinfo" ]
+          [ "percent" ]
+          [ "fileformat" "fileencoding" "filetype" ]
+        ];
+      };
+    };
 
     output.plugins = with pkgs.vimPlugins; [ lightline-vim ];
   };

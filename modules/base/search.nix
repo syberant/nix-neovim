@@ -24,13 +24,8 @@ in {
   };
 
   config = mkIf cfg.enable {
-    output.config_file = ''
-      ${optionalString cfg.ignorecase "set ignorecase"}
-      ${optionalString cfg.smartcase "set smartcase"}
-      ${optionalString cfg.incsearch "set incsearch"}
-      ${optionalString cfg.hlsearch "set hlsearch"}
-
-      ${optionalString cfg.gdefault "set gdefault"}
-    '';
+    base.options.set = {
+      inherit (cfg) ignorecase smartcase incsearch hlsearch gdefault;
+    };
   };
 }

@@ -15,8 +15,9 @@ in {
   };
 
   config = mkIf cfg.enable {
+    base.options.set.wrap = cfg.wrap;
+
     output.config_file = ''
-      set ${if cfg.wrap then "wrap" else "nowrap"}
       ${optionalString cfg.smart-moving ''
         nnoremap j gj
         nnoremap k gk

@@ -18,13 +18,13 @@ in {
   };
 
   config = mkIf cfg.enable {
-    output.config_file = ''
-      colo tokyonight
-
-      let g:tokyonight_style = "${cfg.style}"
-    '';
+    base.options.var.tokyonight_style = cfg.style;
 
     lightline.colourscheme = "tokyonight";
+
+    output.config_file = ''
+      colo tokyonight
+    '';
 
     output.plugins = with pkgs;
       [
