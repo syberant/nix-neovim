@@ -24,21 +24,16 @@
 
     keybindings = {
       leader = "\\<space>";
-      keybindings = [{
-        action = "<Plug>NERDCommenterToggle";
-        keys = "<leader>;";
-        mapCommand = "map";
-      }];
-    };
-    options = {
-      set.wrap = false;
+      keybindings-shortened."<leader>;" = {
+        command = "<Plug>NERDCommenterToggle";
+        options.silent = true;
+      };
     };
   };
 
   output.path.style = "pure";
 
   output.extraConfig = ''
-    " map <leader>; <Plug>NERDCommenterToggle
     " set timeoutlen=500
   '';
 }
