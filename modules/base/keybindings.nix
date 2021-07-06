@@ -6,72 +6,77 @@ with builtins;
 let
   base = config.base;
   cfg = config.base.keybindings;
+
+  binding-type = with types;
+    submodule {
+      options = {
+        command = mkOption {
+          # TODO: Offer a way to distinguish between lua code and viml commands
+          type = str;
+          description = ''
+            The command to be executed, presumed to be in vimscript for now.
+
+            TODO: Extra explanation
+          '';
+        };
+
+        label = mkOption {
+          type = str;
+          default = "label";
+          example = ''"Toggle Comment"'';
+          description = ''
+            The label shown by which-key.nvim for this keybinding.
+          '';
+        };
+
+        modes = mkOption {
+          # https://github.com/nanotee/nvim-lua-guide#defining-mappings
+          type = enum [ "" "n" "v" "s" "x" "o" "!" "i" "l" "c" "t" ];
+          default = "";
+          description = ''
+            The mode(s) in which this keybinding should apply.
+
+            For more information see:
+            - `:help map-modes`
+            - https://github.com/nanotee/nvim-lua-guide#defining-mappings
+          '';
+        };
+
+        options =
+          genAttrs [ "noremap" "nowait" "silent" "script" "expr" "unique" ]
+          (opt:
+            mkOption {
+              # TODO: make nullable and filter out nulls?
+              type = bool;
+              default = false;
+
+              description = ''
+                Whether to add '<${opt}>' to the mapping.
+
+                For more information see:
+                - `:help :map-arguments`
+                - https://github.com/nanotee/nvim-lua-guide#defining-mappings
+              '';
+            });
+      };
+    };
 in {
   options.base.keybindings = {
-    # TODO: Allow keybindings to be declared as a tree
-    # keybindings = mkOption {
-    # # TODO: Proper typechecking
-    # type = types.attrs;
-    # description = "A list of keymappings.";
-    # default = { };
-    # };
+    keybindings = mkOption {
+      # TODO: Proper typechecking
+      type = with types; attrsOf anything;
+      description = "A list of keymappings.";
+      default = { };
+    };
 
     keybindings-shortened = mkOption {
       description =
         "A list of keymappings with all keys of a combination wrapped into one string, i.e. no tree of keybindings.";
+      # Keeping this open for now as it provides better typechecking
       # readOnly = true;
       default = { };
 
-      type = with types;
-        attrsOf (submodule {
-          options = {
-            modes = mkOption {
-              # https://github.com/nanotee/nvim-lua-guide#defining-mappings
-              type = enum [ "" "n" "v" "s" "x" "o" "!" "i" "l" "c" "t" ];
-              default = "";
-              description = ''
-                The mode(s) in which this keybinding should apply.
-
-                For more information see:
-                - `:help map-modes`
-                - https://github.com/nanotee/nvim-lua-guide#defining-mappings
-              '';
-            };
-
-            command = mkOption {
-              # TODO: Offer a way to distinguish between lua code and viml commands
-              type = str;
-              description = ''
-                TODO
-              '';
-            };
-
-            label = mkOption {
-              type = str;
-              default = "label";
-              description = ''
-                TODO
-              '';
-            };
-
-            options =
-              genAttrs [ "noremap" "nowait" "silent" "script" "expr" "unique" ]
-              (opt:
-                mkOption {
-                  # TODO: make nullable and filter out nulls?
-                  type = bool;
-                  default = false;
-
-                  description = ''
-                    Whether to add '<${opt}>' to the mapping.
-
-                    For more information see:
-                    - `:help :map-arguments`
-                    - https://github.com/nanotee/nvim-lua-guide#defining-mappings
-                  '';
-                });
-          };
-        });
+      type = types.attrsOf binding-type;
     };
 
     leader = mkOption {
@@ -84,7 +89,17 @@ in {
   };
 
   config = {
-    # base.keybindings.keybindings-shortened = cfg.keybindings;
+    # FIXME: Very hacky.
+    base.keybindings.keybindings-shortened = let
+      # kv-pair :: Attrs<recursive_path,keybinding> -> Attrs<path, {name = path; value = keybinding;}>
+      kv-pair = mapAttrsRecursiveCond (set: !set ? command) (path: v: nameValuePair (concatStrings path) v);
+
+      # kv-list :: Attrs<path, {name = path; value = keybinding;}> -> [{name = path; value = keybinding;}]
+      kv-list = x: collect (set: set ? name) (kv-pair x);
+
+      # shorten ::Attrs<recursive_path,keybinding> -> Attrs<path,keybinding>
+      shorten = x: listToAttrs (kv-list x);
+    in shorten cfg.keybindings;
 
     # FIXME: Mapleader somehow not working?
     # base.options.var.mapleader = cfg.leader;

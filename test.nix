@@ -24,9 +24,12 @@
 
     keybindings = {
       leader = "\\<space>";
-      keybindings-shortened."<leader>;" = {
-        command = "<Plug>NERDCommenterToggle";
-        options.silent = true;
+
+      keybindings."<leader>" = {
+        ";" = {
+          command = "<Plug>NERDCommenterToggle";
+          options.silent = true;
+        };
       };
     };
   };
