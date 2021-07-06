@@ -29,7 +29,7 @@ let
           '';
         };
 
-        modes = mkOption {
+        mode = mkOption {
           # https://github.com/nanotee/nvim-lua-guide#defining-mappings
           type = enum [ "" "n" "v" "s" "x" "o" "!" "i" "l" "c" "t" ];
           default = "";
@@ -92,7 +92,8 @@ in {
     # FIXME: Very hacky.
     base.keybindings.keybindings-shortened = let
       # kv-pair :: Attrs<recursive_path,keybinding> -> Attrs<path, {name = path; value = keybinding;}>
-      kv-pair = mapAttrsRecursiveCond (set: !set ? command) (path: v: nameValuePair (concatStrings path) v);
+      kv-pair = mapAttrsRecursiveCond (set: !set ? command)
+        (path: v: nameValuePair (concatStrings path) v);
 
       # kv-list :: Attrs<path, {name = path; value = keybinding;}> -> [{name = path; value = keybinding;}]
       kv-list = x: collect (set: set ? name) (kv-pair x);
@@ -105,10 +106,8 @@ in {
     # base.options.var.mapleader = cfg.leader;
 
     output.config_file = let
-      keybindings-shortened = pkgs.writeText "nix-neovim-keybindings-shortened"
+      keybindings-json = pkgs.writeText "nix-neovim-keybindings-shortened"
         (toJSON cfg.keybindings-shortened);
-      # TODO: Reshape attribute set to eliminate processing step in lua
-      keybindings-whichkey = keybindings-shortened;
     in ''
       let g:mapleader = "${cfg.leader}"
 
@@ -132,14 +131,15 @@ in {
           if cfg.which-key-nvim then ''
             local wk = require("which-key")
 
-            -- FIXME: very hacky, should be able to do all at once by reshapping attribute set
-            for k, v in pairs(from_json("${keybindings-whichkey}")) do
+            -- A bit hacky, should be able to do all at once by reshaping the attribute set on the Nix side
+            -- but performance doesn't seem to be impacted much and this way is easier so I'll keep it for now
+            for k, v in pairs(from_json("${keybindings-json}")) do
               -- which-key.nvim doesn't appear to support the following options: script, nowait, unique
               -- https://github.com/folke/which-key.nvim/blob/2d2954a1d05b4f074e022e64db9aa6093d439bb0/lua/which-key/keys.lua#L191
               wk.register({ [k] = { v.command, v.label, mode=v.mode, noremap=v.options.noremap, silent=v.options.silent, expr=v.options.expr }})
             end
           '' else ''
-            for k, v in pairs(from_json("${keybindings-shortened}")) do
+            for k, v in pairs(from_json("${keybindings-json}")) do
               vim.api.nvim_set_keymap(v.modes, k, v.command, v.options)
             end
           ''
