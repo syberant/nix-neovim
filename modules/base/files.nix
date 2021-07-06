@@ -26,13 +26,16 @@ in {
   };
 
   config = mkIf cfg.enable {
-    base.options.set = mkMerge [
-      { directory = cfg.swapdir; }
-
-      (mkIf cfg.enableUndo {
-        undofile = true;
-        undodir = cfg.undodir;
-      })
-    ];
+    # FIXME: This needs the expansion of $HOME to work
+    # which doesn't happen when loading via JSON
+    # Must be another way to load it but allow extension
+    output.config_file = ''
+      " swap
+      set directory=${cfg.swapdir}
+    '' + optionalString cfg.enableUndo ''
+      " undo
+      set undofile
+      set undodir=${cfg.undodir}
+    '';
   };
 }
