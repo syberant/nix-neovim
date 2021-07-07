@@ -7,6 +7,10 @@ let
   base = config.base;
   cfg = config.base.keybindings;
 
+  # TODO: Offer shortcut where just a string `s` will be interpreted as { command = s; }
+  # this would significantly ease configuration
+  # The type would then become: with types; either str (submodule { options = { ... }; })
+  # I have to think about autoconverting this the right way
   binding-type = with types;
     submodule {
       options = {
@@ -88,7 +92,8 @@ in {
 
     leader = mkOption {
       type = types.str;
-      default = "\\\\"; # Nix turns it into \\ which neovim turns into \
+      default = "\\"; # Nix turns it into \ which gets preserved through JSON
+      example = "<space>";
       description = "The <leader> key, used for custom keybindings.";
     };
 
@@ -96,6 +101,8 @@ in {
   };
 
   config = {
+    base.options.var.mapleader = cfg.leader;
+
     # FIXME: Very hacky.
     base.keybindings.keybindings-shortened = let
       # kv-pair :: Attrs<recursive_path,keybinding> -> Attrs<path, {name = path; value = keybinding;}>
@@ -108,9 +115,6 @@ in {
       # shorten ::Attrs<recursive_path,keybinding> -> Attrs<path,keybinding>
       shorten = x: listToAttrs (kv-list x);
     in shorten cfg.keybindings;
-
-    # FIXME: Mapleader somehow not working?
-    # base.options.var.mapleader = cfg.leader;
 
     output.config_file = let
       keybindings-json = pkgs.writeText "nix-neovim-keybindings-shortened"
@@ -131,8 +135,6 @@ in {
         end
       '';
     in ''
-      let g:mapleader = "${cfg.leader}"
-
       lua << EOF
         -- https://stackoverflow.com/questions/11201262/how-to-read-data-from-a-file-in-lua
         local function from_json(path)

@@ -23,7 +23,8 @@
     files.enable = true;
 
     keybindings = {
-      leader = "\\<space>";
+      leader = "<space>";
+      which-key-nvim = true;
 
       keybindings."<leader>" = {
         ";" = {
