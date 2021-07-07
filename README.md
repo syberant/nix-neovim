@@ -2,7 +2,7 @@ nix-neovim
 ==========
 
 The goal of this project is to have a [NixOS](https://nixos.org)- and [home-manager](https://github.com/nix-community/home-manager)-like way to manage my neovim installation.
-I will add stuff I use but it is completely extendible for everyone! You can easily use your own modules because I'm piggybacking off the NixOS module system.
+I will add stuff I use but it is completely extendible by everyone! You can easily use your own modules because I'm piggybacking off the NixOS module system.
 
 Usage
 -----
@@ -27,3 +27,15 @@ in {
     environment.systemPackages = [ (nix-neovim { inherit configuration pkgs; }) ];
 }
 ```
+
+Or with flakes:
+```bash
+$ # Try out the ./test.nix configuration
+$ nix run github:syberant/nix-neovim
+```
+
+Links
+-----
+- [neovitality](https://github.com/vi-tality/neovitality), another project aiming to configure neovim with Nix
+- [nvim-lua-guide](https://github.com/nanotee/nvim-lua-guide), guide to using lua for neovim configuration, used for writing much of the internals of nix-neovim
+- [Nixpkgs manual section on (neo)vim](https://nixos.org/manual/nixpkgs/stable/#vim), nix-neovim depends on this Nixpkgs functionality
