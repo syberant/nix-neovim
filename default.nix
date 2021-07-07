@@ -36,10 +36,14 @@ let
 
   rcfile = pkgs.writeText "nix-neovim-rc.vim" res.config_file;
 in pkgs.wrapNeovim res.package {
-  extraMakeWrapperArgs = " " + res.makeWrapper
-    + " --set NIXNEOVIMRC '${rcfile}'";
+  extraMakeWrapperArgs = " " + res.makeWrapper;
   configure = {
-    customRC = "source ${rcfile}";
+    customRC = ''
+      " Allows user to inspect the generated configuration with :NixNeovimRc
+      command NixNeovimRc edit ${rcfile}
+
+      source ${rcfile}
+    '';
 
     packages.myVimPackage.start = res.plugins;
   };
