@@ -108,6 +108,21 @@ in {
     output.config_file = let
       keybindings-json = pkgs.writeText "nix-neovim-keybindings-shortened"
         (toJSON cfg.keybindings-shortened);
+      load-keybindings = if cfg.which-key-nvim then ''
+        local wk = require("which-key")
+
+        -- A bit hacky, should be able to do all at once by reshaping the attribute set on the Nix side
+        -- but performance doesn't seem to be impacted much and this way is easier so I'll keep it for now
+        for k, v in pairs(from_json("${keybindings-json}")) do
+          -- which-key.nvim doesn't appear to support the following options: script, nowait, unique
+          -- https://github.com/folke/which-key.nvim/blob/2d2954a1d05b4f074e022e64db9aa6093d439bb0/lua/which-key/keys.lua#L191
+          wk.register({ [k] = { v.command, v.label, mode=v.mode, noremap=v.options.noremap, silent=v.options.silent, expr=v.options.expr }})
+        end
+      '' else ''
+        for k, v in pairs(from_json("${keybindings-json}")) do
+          vim.api.nvim_set_keymap(v.mode, k, v.command, v.options)
+        end
+      '';
     in ''
       let g:mapleader = "${cfg.leader}"
 
@@ -127,23 +142,8 @@ in {
             end
         end
 
-        ${
-          if cfg.which-key-nvim then ''
-            local wk = require("which-key")
+        ${load-keybindings}
 
-            -- A bit hacky, should be able to do all at once by reshaping the attribute set on the Nix side
-            -- but performance doesn't seem to be impacted much and this way is easier so I'll keep it for now
-            for k, v in pairs(from_json("${keybindings-json}")) do
-              -- which-key.nvim doesn't appear to support the following options: script, nowait, unique
-              -- https://github.com/folke/which-key.nvim/blob/2d2954a1d05b4f074e022e64db9aa6093d439bb0/lua/which-key/keys.lua#L191
-              wk.register({ [k] = { v.command, v.label, mode=v.mode, noremap=v.options.noremap, silent=v.options.silent, expr=v.options.expr }})
-            end
-          '' else ''
-            for k, v in pairs(from_json("${keybindings-json}")) do
-              vim.api.nvim_set_keymap(v.modes, k, v.command, v.options)
-            end
-          ''
-        }
       EOF
     '';
 
