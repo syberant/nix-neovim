@@ -32,7 +32,7 @@ let
         mode = mkOption {
           # https://github.com/nanotee/nvim-lua-guide#defining-mappings
           type = enum [ "" "n" "v" "s" "x" "o" "!" "i" "l" "c" "t" ];
-          default = "";
+          default = "n";
           description = ''
             The mode(s) in which this keybinding should apply.
 
@@ -42,22 +42,29 @@ let
           '';
         };
 
-        options =
-          genAttrs [ "noremap" "nowait" "silent" "script" "expr" "unique" ]
-          (opt:
-            mkOption {
-              # TODO: make nullable and filter out nulls?
-              type = bool;
-              default = false;
+        options = mapAttrs (k: v:
+          mkOption {
+            type = bool;
+            default = v;
 
-              description = ''
-                Whether to add '<${opt}>' to the mapping.
+            description = ''
+              Whether to add '<${k}>' to the mapping.
 
-                For more information see:
-                - `:help :map-arguments`
-                - https://github.com/nanotee/nvim-lua-guide#defining-mappings
-              '';
-            });
+              For more information see:
+              - `:help :map-arguments`
+              - https://github.com/nanotee/nvim-lua-guide#defining-mappings
+            '';
+          }) {
+            # FIXME: Automatically set noremap=false for <Plug> commands as these require remapping.
+            # which-key.nvim does this (and in fact overrides nix-neovim)
+            noremap = true; 
+            silent = true;
+
+            nowait = false;
+            script = false;
+            expr = false;
+            unique = false;
+          };
       };
     };
 in {
