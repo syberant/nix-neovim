@@ -45,7 +45,12 @@ in pkgs.wrapNeovim res.package {
       source ${rcfile}
     '';
 
-    packages.myVimPackage.start = res.plugins;
+    packages.myVimPackage.start = [
+      (pkgs.vimUtils.buildVimPluginFrom2Nix {
+        name = "nix-neovim";
+        src = ./plugin;
+      })
+    ] ++ res.plugins;
   };
 } // {
   passthru.customRC = rcfile;
