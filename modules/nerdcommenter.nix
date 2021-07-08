@@ -25,7 +25,7 @@ in {
             };
           };
         });
-      default = [ ];
+      default = { };
       description = "Add custom delimiters.";
     };
   };
