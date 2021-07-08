@@ -92,7 +92,7 @@ in {
     leader = mkOption {
       type = types.str;
       default = "\\"; # Nix turns it into \ which gets preserved through JSON
-      example = "<space>";
+      example = ''" "'';
       description = "The <leader> key, used for custom keybindings.";
     };
 
