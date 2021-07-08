@@ -19,7 +19,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    base.options.var.gitgutter_git_executable = "${pkgs.git}/bin/git";
+    vim.g.gitgutter_git_executable = "${pkgs.git}/bin/git";
 
     output.config_file = optionalString cfg.onSave ''
       autocmd BufWritePost,InsertLeave * GitGutter

@@ -17,7 +17,7 @@
 
   # vim-tmux-navigator.enable = true;
 
-  base = {
+  vim = {
     keybindings = {
       leader = "<space>";
       which-key-nvim = true;

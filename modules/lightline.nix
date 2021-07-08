@@ -21,9 +21,9 @@ in {
   };
 
   config = mkIf cfg.enable {
-    base.options.set.showmode = mkIf cfg.useDefault false;
+    vim.opt.showmode = mkIf cfg.useDefault false;
 
-    base.options.var.lightline = mkIf cfg.useDefault {
+    vim.g.lightline = mkIf cfg.useDefault {
       colorscheme = mkIf (cfg.colourscheme != null) cfg.colourscheme;
 
       active = {

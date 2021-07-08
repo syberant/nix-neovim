@@ -31,7 +31,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    base.options.var = {
+    vim.g = {
       inherit (cfg)
         NERDSpaceDelims NERDCommentEmptyLines NERDTrimTrailingWhitespace
         NERDCustomDelimiters;

@@ -41,7 +41,7 @@ in {
     '';
 
     # Explicitly set the paths to the formatters
-    base.options.var = {
+    vim.g = {
       neoformat_haskell_stylishhaskell = mkIf cfg.formatters.stylish-haskell {
         exe = "${pkgs.stylish-haskell}/bin/stylish-haskell";
         stdin = true;

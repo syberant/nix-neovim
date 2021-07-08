@@ -1,10 +1,10 @@
-{ pkgs, lib, config, vimLib, ... }:
+{ pkgs, lib, config, ... }:
 
 with lib;
 with builtins;
 
 let
-  cfg = config.base.keybindings;
+  cfg = config.vim.keybindings;
 
   # TODO: Offer shortcut where just a string `s` will be interpreted as { command = s; }
   # this would significantly ease configuration
@@ -71,7 +71,7 @@ let
       };
     };
 in {
-  options.base.keybindings = {
+  options.vim.keybindings = {
     keybindings = mkOption {
       # TODO: Proper typechecking
       type = with types; attrsOf anything;
@@ -100,10 +100,10 @@ in {
   };
 
   config = {
-    base.options.var.mapleader = cfg.leader;
+    vim.g.mapleader = cfg.leader;
 
     # FIXME: Very hacky.
-    base.keybindings.keybindings-shortened = let
+    vim.keybindings.keybindings-shortened = let
       # kv-pair :: Attrs<recursive_path,keybinding> -> Attrs<path, {name = path; value = keybinding;}>
       kv-pair = mapAttrsRecursiveCond (set: !set ? command)
         (path: v: nameValuePair (concatStrings path) v);
@@ -116,7 +116,7 @@ in {
     in shorten cfg.keybindings;
 
     output.config_file = let
-      keybindings-json = pkgs.writeText "nix-neovim-keybindings-shortened"
+      keybindings-json = pkgs.writeText "nix-neovim-keybindings-shortened.json"
         (toJSON cfg.keybindings-shortened);
       load-keybindings = if cfg.which-key-nvim then ''
         local wk = require("which-key")
@@ -159,6 +159,6 @@ in {
       optional cfg.which-key-nvim which-key-nvim;
 
     # Recommended in README, delay after which the guide opens
-    base.options.set.timeoutlen = mkIf cfg.which-key-nvim (mkDefault 500);
+    vim.opt.timeoutlen = mkIf cfg.which-key-nvim (mkDefault 500);
   };
 }

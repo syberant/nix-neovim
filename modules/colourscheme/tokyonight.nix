@@ -11,14 +11,14 @@ in {
       type = types.enum [ "storm" "night" "day" ];
       default = "storm";
       description = ''
-        The Tokyo Night theme comes in three styles, storm, a darker variant night and day.
+        The Tokyo Night theme comes in three styles: day, storm and a darker variant night.
         See its README for more information.
       '';
     };
   };
 
   config = mkIf cfg.enable {
-    base.options.var.tokyonight_style = cfg.style;
+    vim.g.tokyonight_style = cfg.style;
 
     lightline.colourscheme = "tokyonight";
 
