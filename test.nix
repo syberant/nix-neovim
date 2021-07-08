@@ -19,7 +19,7 @@
 
   vim = {
     keybindings = {
-      leader = "<space>";
+      leader = " ";
       which-key-nvim = true;
 
       keybindings."<leader>" = {
