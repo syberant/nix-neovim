@@ -4,7 +4,6 @@ with lib;
 with builtins;
 
 let
-  base = config.base;
   cfg = config.base.keybindings;
 
   # TODO: Offer shortcut where just a string `s` will be interpreted as { command = s; }
@@ -160,6 +159,6 @@ in {
       optional cfg.which-key-nvim which-key-nvim;
 
     # Recommended in README, delay after which the guide opens
-    base.timeoutlen = mkIf cfg.which-key-nvim (mkDefault 500);
+    base.options.set.timeoutlen = mkIf cfg.which-key-nvim (mkDefault 500);
   };
 }

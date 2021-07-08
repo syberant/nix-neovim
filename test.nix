@@ -18,10 +18,6 @@
   # vim-tmux-navigator.enable = true;
 
   base = {
-    search.enable = true;
-    wrapping.enable = true;
-    files.enable = true;
-
     keybindings = {
       leader = "<space>";
       which-key-nvim = true;
