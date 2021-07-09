@@ -36,7 +36,7 @@ $ nix run github:syberant/nix-neovim
 
 Links
 -----
-- [neovitality](https://github.com/vi-tality/neovitality), another project aiming to configure neovim with Nix
-- [nixvim](https://github.com/pta2002/nixvim), also aiming to configure neovim with Nix, paused development but interesting nonetheless
-- [nvim-lua-guide](https://github.com/nanotee/nvim-lua-guide), guide to using lua for neovim configuration, used for writing much of the internals of nix-neovim
+- [vi-tality/neovitality](https://github.com/vi-tality/neovitality), another project aiming to configure neovim with Nix
+- [pta2002/nixvim](https://github.com/pta2002/nixvim), also aiming to configure neovim with Nix, paused development but interesting nonetheless
 - [Nixpkgs manual section on (neo)vim](https://nixos.org/manual/nixpkgs/stable/#vim), nix-neovim depends on this Nixpkgs functionality
+- [nanotee/nvim-lua-guide](https://github.com/nanotee/nvim-lua-guide), guide to using lua for neovim configuration, used for writing much of the internals of nix-neovim
