@@ -34,6 +34,13 @@ $ # Try out the ./test.nix configuration
 $ nix run github:syberant/nix-neovim
 ```
 
+Debugging
+---------
+`nix-neovim` provides some tools for helping you debug your neovim config:
+- `:checkhealth nix_neovim` for a quick overview of your configuration
+- `:NixNeovimRc` opens your generated vimrc
+- `:help nix-neovim-configuration.txt` contains a complete list of options, similar to `man configuration.nix` for NixOS
+
 Links
 -----
 - [vi-tality/neovitality](https://github.com/vi-tality/neovitality), another project aiming to configure neovim with Nix
