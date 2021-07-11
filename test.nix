@@ -10,7 +10,6 @@
     rust.enable = true;
   };
   neoformat.enable = true;
-  lightline.enable = true;
   nerdcommenter.enable = true;
   gitgutter.enable = true;
   vim-surround.enable = true;

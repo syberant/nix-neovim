@@ -20,7 +20,7 @@ in {
   config = mkIf cfg.enable {
     vim.g.tokyonight_style = cfg.style;
 
-    lightline.colourscheme = "tokyonight";
+    vim.g.lightline.colorscheme = "tokyonight";
 
     output.config_file = ''
       colo tokyonight

@@ -13,7 +13,7 @@ in {
       colo gruvbox
     '';
 
-    lightline.colourscheme = "gruvbox";
+    vim.g.lightline.colorscheme = "gruvbox";
 
     output.plugins = with pkgs.vimPlugins; [ gruvbox ];
   };
