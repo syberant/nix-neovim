@@ -72,10 +72,13 @@ in {
     # Add a base set of utilities (sh, awk, sed, etc.)
     output.path.path = pkgs.stdenv.initialPath;
 
-    output.makeWrapper = {
-      "pure" = "--set PATH ${makeBinPath cfg.path.path}";
-      "impure" = "--prefix PATH : ${makeBinPath cfg.path.path}";
-      "nopath" = "";
-    }.${cfg.path.style};
+    vim.g.nix_neovim_path = if cfg.path.style == "nopath" then
+      "nopath"
+    else
+      pkgs.symlinkJoin {
+        name = "nix-neovim-PATH";
+        paths = cfg.path.path;
+      } + "/bin";
+    vim.g.nix_neovim_current_style = cfg.path.style;
   };
 }
