@@ -11,10 +11,6 @@
   };
   neoformat.enable = true;
   nerdcommenter.enable = true;
-  gitgutter.enable = true;
-  vim-surround.enable = true;
-
-  # vim-tmux-navigator.enable = true;
 
   vim = {
     keybindings = {
