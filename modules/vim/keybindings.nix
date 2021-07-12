@@ -135,7 +135,7 @@ in {
       '';
     in ''
       lua << EOF
-        local from_json = require('nix-neovim-utils').from_json
+        local from_json = require('nix-neovim.utils').from_json
 
         ${load-keybindings}
 

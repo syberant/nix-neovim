@@ -32,7 +32,7 @@ in {
       json_globals = settingsFormat.generate "nix-neovim-globals.json" cfg.g;
     in ''
       lua << EOF
-        local from_json = require('nix-neovim-utils').from_json
+        local from_json = require('nix-neovim.utils').from_json
 
         for k, v in pairs(from_json("${json_options}")) do
           vim.opt[k] = v
