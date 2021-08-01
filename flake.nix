@@ -74,15 +74,7 @@
                 ${builtins.toJSON value.example}
               >
             '';
-          optionsVimWiki = o:
-            ''
-              *nix-neovim-configuration.txt*
-
-              ===============================================================================
-              OPTIONS ~
-              You can use the following options in your `configuration.nix` file.
-
-            '' + concatStringsSep "\n" (mapAttrsToList singleVimWiki o);
+          optionsVimWiki = o: concatStringsSep "\n" (mapAttrsToList singleVimWiki o);
 
           res = eval.config.output;
           rcfile = pkgs.writeText "nix-neovim-rc.vim" res.config_file;
@@ -103,8 +95,15 @@
                   name = "nix-neovim-plugin";
                   paths = [
                     ./plugin
-                    (pkgs.writeTextDir "doc/nix-neovim-configuration.txt"
-                      (optionsVimWiki documentation.optionsNix))
+                    (pkgs.writeTextDir "doc/nix-neovim-configuration.txt" ''
+                      *nix-neovim-configuration.txt*
+
+                      ===============================================================================
+                      OPTIONS ~
+                      You can use the following options in your `configuration.nix` file.
+
+                      ${optionsVimWiki documentation.optionsNix}
+                    '')
                   ];
                 };
               })
