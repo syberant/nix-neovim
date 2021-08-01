@@ -10,7 +10,6 @@
     rust.enable = true;
   };
   neoformat.enable = true;
-  nerdcommenter.enable = true;
 
   vim = {
     keybindings = {
