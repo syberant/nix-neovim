@@ -10,8 +10,7 @@ in {
       readOnly = true;
       description = ''
         The final product, a wrapped neovim binary containing all of the configuration you set.
-
-        Read-only option, used to get the built binary out of the module system.
+        Its only purpose is to get the built binary out of the module system.
       '';
     };
   };
@@ -45,6 +44,8 @@ in {
           Example: >
             ${builtins.toJSON value.example}
           >
+        '' + optionalString (value ? readOnly) ''
+          Read-only option, can not be changed but only read!
         '';
       optionsVimWiki = o:
         concatStringsSep "\n" (mapAttrsToList singleVimWiki o);
