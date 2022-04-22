@@ -10,6 +10,7 @@ in {
       default = "";
       description =
         "Raw text ending up in config file, this is used internally by all modules, please use extraConfig instead to place your extra configuration after nix-neovim's automated one.";
+      internal = true;
     };
 
     plugins = mkOption {
@@ -27,7 +28,7 @@ in {
     package = mkOption {
       type = types.package;
       default = pkgs.neovim-unwrapped;
-      description = "Unwrapped neovim binary.";
+      description = "Unwrapped neovim binary to be used.";
     };
 
     path = {
