@@ -6,31 +6,70 @@ I will add stuff I use but it is completely extendible by everyone! You can spli
 
 Usage
 -----
-This project gives you a function that takes a `configuration` and `pkgs`, the example below illustrates how to use this in a NixOS module.
+This project gives you the function `buildNeovim` that takes a `configuration` and `pkgs`.
+Available options for configuration can be found by running `:help nix-neovim-configuration.txt` inside of a neovim instance produced by nix-neovim.
+A very basic example configuration goes as follows:
 ```nix
+# config.nix
 { pkgs, ... }:
 
-let source = builtins.fetchGit {
-        url = "https://github.com/syberant/nix-neovim.git";
-        rev = "36082ecb85d2dd66aaa47ecfe943ae5ec47012eb"; # Change this to a newer version
-        sha256 = "0qpavrrqr65cddgfv5hpi4njhbg0lnf00b85nz0kmzi5rl2wv6ix"; # Change this to the appropriate hash
+{
+  # imports = [ <your other modules here> ];
+
+  vim = {
+    keybindings = {
+      leader = " ";
+      which-key-nvim = true;
+
+      keybindings-shortened = {
+        "<leader>;" = {
+          command = "<Plug>NERDCommenterToggle";
+          options.silent = true;
+        };
+      };
     };
-    nix-neovim = import source;
-    configuration = {
-        languages.nix.enable = true;
-        colourscheme.gruvbox.enable = true;
-        lightline.enable = true;
+
+    g.tokyonight_style = "storm";
+    opt.showmode = false;
+  };
+
+  output = {
+    path.style = "pure";
+    plugins = with pkgs.vimPlugins; [
+      nerdcommenter
+      vim-nix
+      tokyonight-nvim
+    ];
+    extraConfig = ''
+      colorscheme tokyonight
+    '';
+  };
+}
+
+# flake.nix
+{
+  inputs = { nix-neovim.url = "github:syberant/nix-neovim"; };
+
+  outputs = { self, nix-neovim }: {
+    # For nix build
+    defaultPackage."x86_64-linux" = nix-neovim.buildNeovim {
+      configuration = ./config.nix;
+      # pkgs = <your own instance of nixpkgs here>;
     };
-    # Or use a separate file for configuration
-    # configuration = ./test.nix
-in {
-    environment.systemPackages = [ (nix-neovim { inherit configuration pkgs; }) ];
+
+    # For nix run
+    defaultApp."x86_64-linux" = {
+      type = "app";
+      program = "${self.defaultPackage."x86_64-linux"}/bin/nvim";
+    };
+  };
 }
 ```
+Now you can try it out with `nix run .#`!
 
-Or with flakes:
+You could also try out some premade configs:
 ```bash
-$ # Try out the ./test.nix configuration
+$ # Try out the example (./test.nix) configuration
 $ nix run github:syberant/nix-neovim
 $ # Or my personal configuration (warning: it has LARGE dependencies, LaTeX in particular.)
 $ nix run github:syberant/nix-config#neovim
@@ -40,6 +79,7 @@ Philosophy
 ----------
 Early on this project contained default configurations for many common plugins, each with relevant options.
 This caused a great deal of pain as there was little distinction between `nix-neovim` and [my personal neovim config](https://github.com/syberant/nix-config/blob/master/configuration/home-manager/modules/neovim/configuration.nix) and constantly updating these options turned out to be very opinionated and problematic (trying to get them complete even more so).
+If extensive and elaborate options appeal to you go check out some of the other projects in the [Links](#links) section!
 
 My current goal for this project is to explicitly exclude configuration of specific plugins and instead only provide tools for managing neovim configuration with Nix.
 This results in features like:
@@ -67,6 +107,6 @@ Debugging
 Links
 -----
 - [vi-tality/neovitality](https://github.com/vi-tality/neovitality), another project aiming to configure neovim with Nix
-- [pta2002/nixvim](https://github.com/pta2002/nixvim), also aiming to configure neovim with Nix, paused development but interesting nonetheless
+- [pta2002/nixvim](https://github.com/pta2002/nixvim), also aiming to configure neovim with Nix
 - [Nixpkgs manual section on (neo)vim](https://nixos.org/manual/nixpkgs/stable/#vim), nix-neovim depends on this Nixpkgs functionality
 - [nanotee/nvim-lua-guide](https://github.com/nanotee/nvim-lua-guide), guide to using lua for neovim configuration, used for writing much of the internals of nix-neovim
