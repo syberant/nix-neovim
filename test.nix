@@ -1,33 +1,28 @@
 { pkgs, ... }:
 
 {
-  # colourscheme.gruvbox.enable = true;
-  colourscheme.tokyonight.enable = true;
-  colourscheme.tokyonight.style = "night";
-  languages = {
-    nix.enable = true;
-    haskell.enable = true;
-    rust.enable = true;
-  };
-  neoformat.enable = true;
-
   vim = {
     keybindings = {
       leader = " ";
       which-key-nvim = true;
 
-      keybindings."<leader>" = {
-        ";" = {
+      keybindings-shortened = {
+        "<leader>;" = {
           command = "<Plug>NERDCommenterToggle";
           options.silent = true;
         };
       };
     };
+
+    g.tokyonight_style = "storm";
+    opt.showmode = false;
   };
 
-  output.path.style = "pure";
-
-  output.extraConfig = ''
-    " set timeoutlen=500
-  '';
+  output = {
+    path.style = "pure";
+    plugins = with pkgs.vimPlugins; [ nerdcommenter vim-nix tokyonight-nvim ];
+    extraConfig = ''
+      colorscheme tokyonight
+    '';
+  };
 }
