@@ -4,6 +4,8 @@ nix-neovim
 The goal of this project is to have a [NixOS](https://nixos.org)- and [home-manager](https://github.com/nix-community/home-manager)-like way to manage my neovim installation.
 I will add stuff I use but it is completely extendible by everyone! You can split up your configuration into modules because I'm piggybacking off the NixOS module system.
 
+![The output of running `:checkhealth`.](./checkhealth.png)
+
 Usage
 -----
 This project gives you the function `buildNeovim` that takes a `configuration` and `pkgs`.
